@@ -33,3 +33,13 @@ rm ./configuration_files/map_builder_server.lua
 
 ### 2.3 删除PROMETHEUS
 PROMETHEUS（普罗米修斯）
+
+### 2.4 删除Sphinx分支
+```c
+find_package(Sphinx)
+if(SPHINX_FOUND)
+  add_subdirectory("docs")
+endif()
+```
+删除docs文件夹
+
