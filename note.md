@@ -17,7 +17,7 @@ cmake ..
 make
 ```
 
-## 2 编译优化
+## 2 CMakeLists.txt编译优化
 ### 2.1 删除去WIN32分支和MSVC分支
 ### 2.2 删除GRPC
 删除GRPC是cartographer做的另外一套接口，是通过服务来调用的。我们使用ros的接口，所以不使用这个。
@@ -26,3 +26,10 @@ make
 ```bash
 rm cartographer/cloud -rf
 ```
+* 删除Lua文件
+```
+rm ./configuration_files/map_builder_server.lua
+```
+
+### 2.3 删除PROMETHEUS
+PROMETHEUS（普罗米修斯）
