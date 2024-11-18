@@ -6,6 +6,7 @@ namespace slam {
 Slam::Slam():rclcpp::Node("cartographer_node") {
   // tf_buffer_ = std::make_shared<tf2_ros::Buffer>(this->get_clock());
   // tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
+  tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
 
   Eigen::Vector3d trans;  
   trans << 0,0,0;
@@ -49,6 +50,20 @@ void Slam::LocalSlamResultCallback(int tra_id, common::Time time, transform::Rig
     cartographer::transform::Rigid3d local2global = map_builder_ptr_->pose_graph()->GetLocalToGlobalTransform(tra_id);
     cartographer::transform::Rigid3d pose3d = local2global * local_pose;
     std::cout<<"pose: x"<<pose3d.translation().x()<<" y "<<pose3d.translation().y()<<" angle "<<pose3d.rotation().z()<<std::endl;
+
+    // publish tf
+    geometry_msgs::msg::TransformStamped transformStamped;
+    transformStamped.header.stamp = rclcpp::Time();
+    transformStamped.header.frame_id = "map";
+    transformStamped.child_frame_id = "laser_link";  //雷达的位姿
+    transformStamped.transform.translation.x = pose3d.translation().x();
+    transformStamped.transform.translation.y = pose3d.translation().y();
+    transformStamped.transform.translation.z = pose3d.translation().z();
+    transformStamped.transform.rotation.x = pose3d.rotation().x();
+    transformStamped.transform.rotation.y = pose3d.rotation().y();
+    transformStamped.transform.rotation.z = pose3d.rotation().z();
+    transformStamped.transform.rotation.w = pose3d.rotation().w();
+    tf_broadcaster_->sendTransform(transformStamped);
 }
 
 // ros::Time ToRos(::cartographer::common::Time time) {
